@@ -9,4 +9,5 @@ import (
 func main() {
 	fmt.Println("Hello, world!")
 	server.Server()
+	fmt.Println("Main end")
 }

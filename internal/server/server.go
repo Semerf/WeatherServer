@@ -9,11 +9,6 @@ import (
 	"strconv"
 )
 
-const (
-	API_URL_CURRENT  string = "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=fbf18251cec73bc7b51fcf91b9c2abe7&units=metric"
-	API_URL_FORECAST string = "https://api.openweathermap.org/data/2.5/forecast?q=%s&appid=fbf18251cec73bc7b51fcf91b9c2abe7&units=metric"
-)
-
 type WeatherResult struct {
 	City        string
 	Unit        string
@@ -24,6 +19,10 @@ func HandlerCurrent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	switch r.Method {
 	case http.MethodGet:
+		api_url, setBool := os.LookupEnv("API_URL_CURRENT")
+		if !setBool {
+			fmt.Println("API_URL_FORECAST env not found")
+		}
 		var currentWeather WeatherResult
 		var cityName string
 		r.ParseForm()
@@ -33,8 +32,8 @@ func HandlerCurrent(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		client := http.Client{}
-		var api_url = API_URL_CURRENT
 		api_url = fmt.Sprintf(api_url, cityName)
+		fmt.Println(api_url)
 		req, err := http.NewRequest("GET", api_url, nil)
 		if err != nil {
 			log.Fatal(err)
@@ -74,6 +73,10 @@ func HandlerForecast(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	switch r.Method {
 	case http.MethodGet:
+		api_url, setBool := os.LookupEnv("API_URL_FORECAST")
+		if !setBool {
+			fmt.Println("API_URL_FORECAST env not found")
+		}
 		var forecastWeather WeatherResult
 		var cityName string
 		var timeStamp int
@@ -93,7 +96,7 @@ func HandlerForecast(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		client := http.Client{}
-		var api_url = API_URL_FORECAST
+
 		api_url = fmt.Sprintf(api_url, cityName)
 		req, err := http.NewRequest("GET", api_url, nil)
 		if err != nil {
@@ -148,5 +151,5 @@ func Server() {
 	http.HandleFunc("/v1/forecast/", HandlerForecast)
 	http.HandleFunc("/v1/current/", HandlerCurrent)
 
-	http.ListenAndServe(portStr, nil)
+	log.Fatal(http.ListenAndServe(portStr, nil))
 }
