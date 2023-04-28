@@ -1,0 +1,13 @@
+syntax = "proto3";
+option go_package = "./authPb";
+
+message AuthRequest {
+  string name = 1;
+}
+message AuthResponse {
+  bool access = 1;
+}
+
+service AuthService {
+  rpc auth(AuthRequest) returns (AuthResponse);
+}

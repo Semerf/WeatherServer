@@ -1,0 +1,13 @@
+syntax = "proto3";
+option java_package = "com.auth.grpc";
+
+message AuthRequest {
+  string name = 1;
+}
+message AuthResponse {
+  bool access = 1;
+}
+
+service AuthService {
+  rpc auth(AuthRequest) returns (AuthResponse);
+}
